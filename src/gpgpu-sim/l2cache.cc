@@ -334,6 +334,9 @@ memory_sub_partition::~memory_sub_partition()
 
 void memory_sub_partition::cache_cycle( unsigned cycle )
 {
+    icnt_L2_bandwidth_stats.push_back(m_icnt_L2_queue->get_length());
+    L2_dram_bandwidth_stats.push_back(m_L2_dram_queue->get_length());
+
     // L2 fill responses
     if( !m_config->m_L2_config.disabled()) {
        if ( m_L2cache->access_ready() && !m_L2_icnt_queue->full() ) {

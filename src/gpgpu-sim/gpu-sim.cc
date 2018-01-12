@@ -946,6 +946,8 @@ void gpgpu_sim::gpu_print_stat()
 
            fprintf( stdout, "L2_cache_bank[%d]: Access = %u, Miss = %u, Miss_rate = %.3lf, Pending_hits = %u, Reservation_fails = %u\n",
                     i, l2_css.accesses, l2_css.misses, (double)l2_css.misses / (double)l2_css.accesses, l2_css.pending_hits, l2_css.res_fails);
+           m_memory_sub_partition[i]->print_queue_stats();
+
 
            total_l2_css += l2_css;
        }
