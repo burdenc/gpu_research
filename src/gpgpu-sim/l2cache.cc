@@ -336,6 +336,17 @@ void memory_sub_partition::cache_cycle( unsigned cycle )
 {
     icnt_L2_bandwidth_stats.push_back(m_icnt_L2_queue->get_length());
     L2_dram_bandwidth_stats.push_back(m_L2_dram_queue->get_length());
+    size_t num_writes = 0;
+
+    for (size_t i = 0; i < m_icnt_L2_queue->get_length(); i++) {
+      if ((*m_icnt_L2_queue)[i]->is_write()) num_writes++;
+    }
+    icnt_L2_bandwidth_writes_stats.push_back(num_writes);
+
+    for (size_t i = 0; i < m_L2_dram_queue->get_length(); i++) {
+      if ((*m_L2_dram_queue)[i]->is_write()) num_writes++;
+    }
+    L2_dram_bandwidth_writes_stats.push_back(num_writes);
 
     // L2 fill responses
     if( !m_config->m_L2_config.disabled()) {

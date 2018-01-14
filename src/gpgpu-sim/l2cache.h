@@ -33,6 +33,7 @@
 
 #include <list>
 #include <queue>
+#include <fstream>
 
 class mem_fetch;
 
@@ -173,19 +174,67 @@ public:
    void visualizer_print( gzFile visualizer_file );
    void print_cache_stat(unsigned &accesses, unsigned &misses) const;
    void print( FILE *fp ) const;
-   void print_queue_stats() {
-     printf("icnt -> L2 (max %d): ", m_icnt_L2_queue->get_max_len());
-     for (size_t bandwidth_use : icnt_L2_bandwidth_stats) {
-       printf("%d ", bandwidth_use);
-     }
-     printf("\n");
 
-     printf("L2 -> dram (max %d): ", m_L2_dram_queue->get_max_len());
-     for (size_t bandwidth_use : L2_dram_bandwidth_stats) {
-       printf("%d ", bandwidth_use);
+   void print_queue_stats( std::ofstream& fp ) {
+     for(size_t i = 0; i < icnt_L2_bandwidth_stats.size(); ++i)
+     {
+       if(i != 0)
+         fp << ",";
+       fp << icnt_L2_bandwidth_stats[i];
      }
-     printf("\n");
+     fp << std::endl;
+
+     for(size_t i = 0; i < icnt_L2_bandwidth_writes_stats.size(); ++i)
+     {
+       if(i != 0)
+         fp << ",";
+       fp << icnt_L2_bandwidth_writes_stats[i];
+     }
+     fp << std::endl;
+
+     for(size_t i = 0; i < L2_dram_bandwidth_stats.size(); ++i)
+     {
+       if(i != 0)
+         fp << ",";
+       fp << L2_dram_bandwidth_stats[i];
+     }
+     fp << std::endl;
+
+     for(size_t i = 0; i < L2_dram_bandwidth_writes_stats.size(); ++i)
+     {
+       if(i != 0)
+         fp << ",";
+       fp << L2_dram_bandwidth_writes_stats[i];
+     }
+     fp << std::endl;
+
+/*     if (!icnt_L2_bandwidth_stats.empty()) {
+       fprintf(fp, "%zu", icnt_L2_bandwidth_stats[0]);
+       for (size_t i = 1; i < icnt_L2_bandwidth_stats.size(); i++) {
+         size_t bandwidth_use = icnt_L2_bandwidth_stats[i];
+         fprintf(fp, ",%d", bandwidth_use);
+       fflush(fp);
+       }
+     }
+     fprintf(fp, "\n");
+
+     if (!L2_dram_bandwidth_stats.empty()) {
+       fprintf(fp, "%zu", L2_dram_bandwidth_stats[0]);
+       for (size_t i = 1; i < L2_dram_bandwidth_stats.size(); i++) {
+         size_t bandwidth_use = L2_dram_bandwidth_stats[i];
+         fprintf(fp, ",%d", bandwidth_use);
+       fflush(fp);
+       }
+     }
+     fprintf(fp, "\n");*/
    }
+
+   std::vector<size_t> icnt_L2_bandwidth_stats;
+   size_t num_icnt_L2_writes;
+   std::vector<size_t> icnt_L2_bandwidth_writes_stats;
+   std::vector<size_t> L2_dram_bandwidth_stats;
+   size_t num_L2_dram_writes;
+   std::vector<size_t> L2_dram_bandwidth_writes_stats;
 
    void accumulate_L2cache_stats(class cache_stats &l2_stats) const;
    void get_L2cache_sub_stats(struct cache_sub_stats &css) const;
@@ -216,9 +265,6 @@ private:
    unsigned long long int wb_addr;
 
    class memory_stats_t *m_stats;
-
-   std::vector<size_t> icnt_L2_bandwidth_stats;
-   std::vector<size_t> L2_dram_bandwidth_stats;
 
    std::set<mem_fetch*> m_request_tracker;
 

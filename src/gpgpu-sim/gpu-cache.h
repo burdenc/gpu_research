@@ -28,6 +28,8 @@
 #ifndef GPU_CACHE_H
 #define GPU_CACHE_H
 
+#include <iostream>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "gpu-misc.h"
@@ -168,10 +170,10 @@ public:
         }
         switch (wp) {
         case 'R': m_write_policy = READ_ONLY; break;
-        case 'B': m_write_policy = WRITE_BACK; break;
+        case 'B': m_write_policy = WRITE_BACK; std::cout << "WRITE-BACK" << std::endl; break;
         case 'T': m_write_policy = WRITE_THROUGH; break;
-        case 'E': m_write_policy = WRITE_EVICT; break;
-        case 'L': m_write_policy = LOCAL_WB_GLOBAL_WT; break;
+        case 'E': m_write_policy = WRITE_EVICT; std::cout << "WRITE-EVICT" << std::endl; break;
+        case 'L': m_write_policy = LOCAL_WB_GLOBAL_WT; std::cout << "LOCAL-WB" << std::endl; break;
         default: exit_parse_error();
         }
         switch (ap) {

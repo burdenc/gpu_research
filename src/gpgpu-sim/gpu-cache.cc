@@ -28,6 +28,7 @@
 #include "gpu-cache.h"
 #include "stat-tool.h"
 #include <assert.h>
+#include <iostream>
 
 #define MAX_DEFAULT_CACHE_SIZE_MULTIBLIER 4
 // used to allocate memory that is large enough to adapt the changes in cache size across kernels
@@ -787,6 +788,7 @@ void data_cache::send_write_request(mem_fetch *mf, cache_event request, unsigned
 
 /// Write-back hit: Mark block as modified
 cache_request_status data_cache::wr_hit_wb(new_addr_type addr, unsigned cache_index, mem_fetch *mf, unsigned time, std::list<cache_event> &events, enum cache_request_status status ){
+	//std::cout << "WRITE-BACK" << std::endl;
 	new_addr_type block_addr = m_config.block_addr(addr);
 	m_tag_array->access(block_addr,time,cache_index); // update LRU state
 	cache_block_t &block = m_tag_array->get_block(cache_index);
@@ -973,7 +975,8 @@ data_cache::rd_miss_base( new_addr_type addr,
         if(wb && (m_config.m_write_policy != WRITE_THROUGH) ){ 
             mem_fetch *wb = m_memfetch_creator->alloc(evicted.m_block_addr,
                 m_wrbk_type,m_config.get_line_sz(),true);
-        send_write_request(wb, WRITE_BACK_REQUEST_SENT, time, events);
+	std::cout << "EVICT CLEAN" << std::endl;
+        //send_write_request(wb, WRITE_BACK_REQUEST_SENT, time, events);
     }
         return MISS;
     }

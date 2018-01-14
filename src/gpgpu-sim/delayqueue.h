@@ -166,6 +166,14 @@ public:
    unsigned get_length() const { return m_length; }
    unsigned get_max_len() const { return m_max_len; }
 
+   T* operator[](size_t idx) {
+     fifo_data<T>* ddp = m_head;
+     for (size_t i = 0; i < idx; i++) {
+       ddp = ddp->m_next;
+     }
+     return ddp->m_data;
+   }
+
    void print() const
    {
       fifo_data<T>* ddp = m_head;

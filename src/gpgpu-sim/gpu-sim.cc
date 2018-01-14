@@ -71,6 +71,7 @@ class  gpgpu_sim_wrapper {};
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 
@@ -939,15 +940,23 @@ void gpgpu_sim::gpu_print_stat()
        l2_css.clear();
        total_l2_css.clear();
 
+       std::ofstream queue_stats("./l2_dram_queue_stats.csv", std::ofstream::out | std::ofstream::trunc);
+
        printf("\n========= L2 cache stats =========\n");
+       printf("Printing stats for %d mem partitions\n", m_memory_config->m_n_mem_sub_partition);
+       for (unsigned i=0;i<m_memory_config->m_n_mem_sub_partition;i++){
+           printf("%d, %zu, %zu\n", i, m_memory_sub_partition[i]->icnt_L2_bandwidth_stats.size(), m_memory_sub_partition[i]->L2_dram_bandwidth_stats.size());
+           printf("%d, %zu, %zu\n", i, m_memory_sub_partition[i]->icnt_L2_bandwidth_stats[2572], m_memory_sub_partition[i]->L2_dram_bandwidth_stats[2572]);
+           printf("%d, %zu, %zu\n", i, m_memory_sub_partition[i]->icnt_L2_bandwidth_stats[2573], m_memory_sub_partition[i]->L2_dram_bandwidth_stats[2573]);
+           printf("%d, %zu, %zu\n", i, m_memory_sub_partition[i]->icnt_L2_bandwidth_stats[2574], m_memory_sub_partition[i]->L2_dram_bandwidth_stats[2574]);
+       }
        for (unsigned i=0;i<m_memory_config->m_n_mem_sub_partition;i++){
            m_memory_sub_partition[i]->accumulate_L2cache_stats(l2_stats);
            m_memory_sub_partition[i]->get_L2cache_sub_stats(l2_css);
 
            fprintf( stdout, "L2_cache_bank[%d]: Access = %u, Miss = %u, Miss_rate = %.3lf, Pending_hits = %u, Reservation_fails = %u\n",
                     i, l2_css.accesses, l2_css.misses, (double)l2_css.misses / (double)l2_css.accesses, l2_css.pending_hits, l2_css.res_fails);
-           m_memory_sub_partition[i]->print_queue_stats();
-
+           m_memory_sub_partition[i]->print_queue_stats(queue_stats);
 
            total_l2_css += l2_css;
        }
