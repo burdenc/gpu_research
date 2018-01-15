@@ -1174,10 +1174,16 @@ void shader_core_ctx::execute()
 
 void ldst_unit::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& dl1_misses ) {
    if( m_L1D ) {
-       std::stringstream result;
-       std::copy(write_pressure.begin(), write_pressure.end(), std::ostream_iterator<int>(result, " "));
-       printf("%s\n", result.str().c_str());
-       m_L1D->print( fp, dl1_accesses, dl1_misses );
+        std::stringstream ss;
+        for(size_t i = 0; i < write_pressure.size(); ++i)
+        {
+          if(i != 0)
+            ss << ",";
+          ss << write_pressure[i];
+        }
+        std::string s = ss.str();
+        printf("%s\n", s);
+        m_L1D->print( fp, dl1_accesses, dl1_misses );
    }
 }
 
