@@ -46,9 +46,6 @@
 #include <limits.h>
 #include "traffic_breakdown.h"
 #include "shader_trace.h"
-// #include <string.h>
-#include <numeric.h>
-#include <iostream.h>
 
 #define PRIORITIZE_MSHR_OVER_WB 1
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -1177,9 +1174,9 @@ void shader_core_ctx::execute()
 
 void ldst_unit::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& dl1_misses ) {
    if( m_L1D ) {
-       std::string s;
-       s = accumulate(begin(write_pressure), end(write_pressure), s);
-       printf("%s\n", s);
+       std::stringstream result;
+       std::copy(write_pressure.begin(), write_pressure.end(), std::ostream_iterator<int>(result, " "));
+       printf("%s\n", result.str().c_str());
        m_L1D->print( fp, dl1_accesses, dl1_misses );
    }
 }
