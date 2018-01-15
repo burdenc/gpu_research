@@ -1175,13 +1175,6 @@ void shader_core_ctx::execute()
 
 void ldst_unit::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& dl1_misses ) {
    if( m_L1D ) {
-        m_L1D->print( fp, dl1_accesses, dl1_misses );
-   }
-}
-
-void ldst_unit::get_cache_stats(cache_stats &cs) {
-    // Adds stats to 'cs' from each cache
-    if(m_L1D){
       std::stringstream ss;
         for(size_t i = 0; i < write_pressure.size(); ++i)
         {
@@ -1191,8 +1184,14 @@ void ldst_unit::get_cache_stats(cache_stats &cs) {
         }
         std::string s = ss.str();
         printf("vector for ldst unit is %s\n", s.c_str());
+        m_L1D->print( fp, dl1_accesses, dl1_misses );
+   }
+}
+
+void ldst_unit::get_cache_stats(cache_stats &cs) {
+    // Adds stats to 'cs' from each cache
+    if(m_L1D)
         cs += m_L1D->get_stats();
-    }
     if(m_L1C)
         cs += m_L1C->get_stats();
     if(m_L1T)
@@ -1348,7 +1347,7 @@ mem_stage_stall_type ldst_unit::process_memory_access_queue( cache_t *cache, war
     //const mem_access_t &access = inst.accessq_back();
     mem_fetch *mf = m_mf_allocator->alloc(inst,inst.accessq_back());
     std::list<cache_event> events;
-    if(was_write_sent(events)){
+    if(was_write_sent(events) || was_writeback_sent(events)){
       writes_in_cycle++;
     }
     enum cache_request_status status = cache->access(mf->get_addr(),mf,gpu_sim_cycle+gpu_tot_sim_cycle,events);

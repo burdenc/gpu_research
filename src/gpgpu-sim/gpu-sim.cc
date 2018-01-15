@@ -911,6 +911,7 @@ void gpgpu_sim::gpu_print_stat()
    cache_stats core_cache_stats;
    core_cache_stats.clear();
    for(unsigned i=0; i<m_config.num_cluster(); i++){
+       m_cluster[i]->print_cache_stats();
        m_cluster[i]->get_cache_stats(core_cache_stats);
    }
    printf("\nTotal_core_cache_stats:\n");
