@@ -1190,7 +1190,7 @@ void ldst_unit::get_cache_stats(cache_stats &cs) {
           ss << write_pressure[i];
         }
         std::string s = ss.str();
-        printf("vector for ldst unit is %s\n", s);
+        printf("vector for ldst unit is %s\n", s.c_str());
         cs += m_L1D->get_stats();
     }
     if(m_L1C)
