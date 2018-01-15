@@ -339,12 +339,12 @@ void memory_sub_partition::cache_cycle( unsigned cycle )
     size_t num_writes = 0;
 
     for (size_t i = 0; i < m_icnt_L2_queue->get_length(); i++) {
-      if ((*m_icnt_L2_queue)[i]->is_write()) num_writes++;
+      if ((*m_icnt_L2_queue)[i]->get_access_type() == L2_WRBK_ACC) num_writes++;
     }
     icnt_L2_bandwidth_writes_stats.push_back(num_writes);
 
     for (size_t i = 0; i < m_L2_dram_queue->get_length(); i++) {
-      if ((*m_L2_dram_queue)[i]->is_write()) num_writes++;
+      if ((*m_L2_dram_queue)[i]->get_access_type() == L2_WRBK_ACC) num_writes++;
     }
     L2_dram_bandwidth_writes_stats.push_back(num_writes);
 
