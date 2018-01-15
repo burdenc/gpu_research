@@ -46,9 +46,9 @@
 #include <limits.h>
 #include "traffic_breakdown.h"
 #include "shader_trace.h"
-#include <string.h>
-#include <numeric>
-#include <iostream>
+// #include <string.h>
+#include <numeric.h>
+#include <iostream.h>
 
 #define PRIORITIZE_MSHR_OVER_WB 1
 #define MAX(a,b) (((a)>(b))?(a):(b))
