@@ -1175,7 +1175,14 @@ void shader_core_ctx::execute()
 
 void ldst_unit::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& dl1_misses ) {
    if( m_L1D ) {
-        std::stringstream ss;
+        m_L1D->print( fp, dl1_accesses, dl1_misses );
+   }
+}
+
+void ldst_unit::get_cache_stats(cache_stats &cs) {
+    // Adds stats to 'cs' from each cache
+    if(m_L1D){
+      std::stringstream ss;
         for(size_t i = 0; i < write_pressure.size(); ++i)
         {
           if(i != 0)
@@ -1183,15 +1190,9 @@ void ldst_unit::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& d
           ss << write_pressure[i];
         }
         std::string s = ss.str();
-        printf("%s\n", s);
-        m_L1D->print( fp, dl1_accesses, dl1_misses );
-   }
-}
-
-void ldst_unit::get_cache_stats(cache_stats &cs) {
-    // Adds stats to 'cs' from each cache
-    if(m_L1D)
+        printf("vector for ldst unit is %s\n", s);
         cs += m_L1D->get_stats();
+    }
     if(m_L1C)
         cs += m_L1C->get_stats();
     if(m_L1T)
@@ -1872,7 +1873,6 @@ void ldst_unit::cycle()
    done &= texture_cycle(pipe_reg, rc_fail, type);
    done &= memory_cycle(pipe_reg, rc_fail, type);
    m_mem_rc = rc_fail;
-   printf("pushing back %d writes in the cycle\n", writes_in_cycle);
    write_pressure.push_back(writes_in_cycle);
    if (!done) { // log stall types and return
       assert(rc_fail != NO_RC_FAIL);
