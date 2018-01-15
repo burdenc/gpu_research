@@ -1337,6 +1337,9 @@ mem_stage_stall_type ldst_unit::process_memory_access_queue( cache_t *cache, war
     //const mem_access_t &access = inst.accessq_back();
     mem_fetch *mf = m_mf_allocator->alloc(inst,inst.accessq_back());
     std::list<cache_event> events;
+    if(was_write_sent(&events)){
+      writes_in_cycle++;
+    }
     enum cache_request_status status = cache->access(mf->get_addr(),mf,gpu_sim_cycle+gpu_tot_sim_cycle,events);
     return process_cache_access( cache, mf->get_addr(), inst, events, mf, status );
 }
@@ -1586,6 +1589,7 @@ void ldst_unit::init( mem_fetch_interface *icnt,
     m_next_global=NULL;
     m_last_inst_gpu_sim_cycle=0;
     m_last_inst_gpu_tot_sim_cycle=0;
+    writes_in_cycle = 0;
 }
 
 
@@ -1794,6 +1798,7 @@ void ldst_unit::issue( register_set &reg_set )
 */
 void ldst_unit::cycle()
 {
+   writes_in_cycle = 0;
    writeback();
    m_operand_collector->step();
    for( unsigned stage=0; (stage+1)<m_pipeline_depth; stage++ ) 
@@ -1857,7 +1862,7 @@ void ldst_unit::cycle()
    done &= texture_cycle(pipe_reg, rc_fail, type);
    done &= memory_cycle(pipe_reg, rc_fail, type);
    m_mem_rc = rc_fail;
-
+   write_pressure.push_back(writes_in_cycle);
    if (!done) { // log stall types and return
       assert(rc_fail != NO_RC_FAIL);
       m_stats->gpgpu_n_stall_shd_mem++;

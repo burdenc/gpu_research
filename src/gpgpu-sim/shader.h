@@ -1118,6 +1118,8 @@ public:
     void get_L1D_sub_stats(struct cache_sub_stats &css) const;
     void get_L1C_sub_stats(struct cache_sub_stats &css) const;
     void get_L1T_sub_stats(struct cache_sub_stats &css) const;
+    std::vector<int> write_pressure; 
+    int writes_in_cycle;
 
 protected:
     ldst_unit( mem_fetch_interface *icnt,
