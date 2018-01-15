@@ -1347,7 +1347,7 @@ mem_stage_stall_type ldst_unit::process_memory_access_queue( cache_t *cache, war
     //const mem_access_t &access = inst.accessq_back();
     mem_fetch *mf = m_mf_allocator->alloc(inst,inst.accessq_back());
     std::list<cache_event> events;
-    if(was_write_sent(&events)){
+    if(was_write_sent(events)){
       writes_in_cycle++;
     }
     enum cache_request_status status = cache->access(mf->get_addr(),mf,gpu_sim_cycle+gpu_tot_sim_cycle,events);
@@ -1872,6 +1872,7 @@ void ldst_unit::cycle()
    done &= texture_cycle(pipe_reg, rc_fail, type);
    done &= memory_cycle(pipe_reg, rc_fail, type);
    m_mem_rc = rc_fail;
+   printf("pushing back %d writes in the cycle\n", writes_in_cycle);
    write_pressure.push_back(writes_in_cycle);
    if (!done) { // log stall types and return
       assert(rc_fail != NO_RC_FAIL);
