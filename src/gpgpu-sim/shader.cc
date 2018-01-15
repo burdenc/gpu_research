@@ -1173,7 +1173,7 @@ void shader_core_ctx::execute()
     }
 }
 
-void ldst_unit::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& dl1_misses ) {
+void ldst_unit::print_write_pressure() {
    if( m_L1D ) {
       std::stringstream ss;
         for(size_t i = 0; i < write_pressure.size(); ++i)
@@ -1184,6 +1184,11 @@ void ldst_unit::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& d
         }
         std::string s = ss.str();
         printf("vector for ldst unit is %s\n", s.c_str());
+   }
+}
+
+void ldst_unit::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& dl1_misses ) {
+   if( m_L1D ) {
         m_L1D->print( fp, dl1_accesses, dl1_misses );
    }
 }
@@ -2825,6 +2830,10 @@ void shader_core_ctx::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsig
    m_ldst_unit->print_cache_stats( fp, dl1_accesses, dl1_misses );
 }
 
+void shader_core_ctx::print_write_pressure() {
+   m_ldst_unit->print_write_pressure();
+}
+
 void shader_core_ctx::get_cache_stats(cache_stats &cs){
     // Adds stats from each cache to 'cs'
     cs += m_L1I->get_stats(); // Get L1I stats
@@ -3376,6 +3385,12 @@ void simt_core_cluster::display_pipeline( unsigned sid, FILE *fout, int print_me
 void simt_core_cluster::print_cache_stats( FILE *fp, unsigned& dl1_accesses, unsigned& dl1_misses ) const {
    for ( unsigned i = 0; i < m_config->n_simt_cores_per_cluster; ++i ) {
       m_core[ i ]->print_cache_stats( fp, dl1_accesses, dl1_misses );
+   }
+}
+
+void simt_core_cluster::print_write_pressure() const {
+   for ( unsigned i = 0; i < m_config->n_simt_cores_per_cluster; ++i ) {
+      m_core[ i ]->print_write_pressure();
    }
 }
 
