@@ -1347,10 +1347,10 @@ mem_stage_stall_type ldst_unit::process_memory_access_queue( cache_t *cache, war
     //const mem_access_t &access = inst.accessq_back();
     mem_fetch *mf = m_mf_allocator->alloc(inst,inst.accessq_back());
     std::list<cache_event> events;
+    enum cache_request_status status = cache->access(mf->get_addr(),mf,gpu_sim_cycle+gpu_tot_sim_cycle,events);
     if(was_write_sent(events) || was_writeback_sent(events)){
       writes_in_cycle++;
     }
-    enum cache_request_status status = cache->access(mf->get_addr(),mf,gpu_sim_cycle+gpu_tot_sim_cycle,events);
     return process_cache_access( cache, mf->get_addr(), inst, events, mf, status );
 }
 
