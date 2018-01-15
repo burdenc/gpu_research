@@ -173,19 +173,6 @@ public:
    void visualizer_print( gzFile visualizer_file );
    void print_cache_stat(unsigned &accesses, unsigned &misses) const;
    void print( FILE *fp ) const;
-   void print_queue_stats() {
-     printf("icnt -> L2 (max %d): ", m_icnt_L2_queue->get_max_len());
-     for (size_t bandwidth_use : icnt_L2_bandwidth_stats) {
-       printf("%d ", bandwidth_use);
-     }
-     printf("\n");
-
-     printf("L2 -> dram (max %d): ", m_L2_dram_queue->get_max_len());
-     for (size_t bandwidth_use : L2_dram_bandwidth_stats) {
-       printf("%d ", bandwidth_use);
-     }
-     printf("\n");
-   }
 
    void accumulate_L2cache_stats(class cache_stats &l2_stats) const;
    void get_L2cache_sub_stats(struct cache_sub_stats &css) const;
@@ -216,9 +203,6 @@ private:
    unsigned long long int wb_addr;
 
    class memory_stats_t *m_stats;
-
-   std::vector<size_t> icnt_L2_bandwidth_stats;
-   std::vector<size_t> L2_dram_bandwidth_stats;
 
    std::set<mem_fetch*> m_request_tracker;
 
